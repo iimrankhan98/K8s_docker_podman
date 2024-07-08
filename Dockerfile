@@ -1,4 +1,4 @@
-FROM centos:7
+FROM httpd
 RUN yum install httpd -y
 WORKDIR /var/www/html
 COPY index.html  /var/www/html
