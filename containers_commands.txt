@@ -1,0 +1,86 @@
+kubectl run myweb --image=httpd
+Kubectl describe pods  mypod 
+kubectl logs 	 mypod
+kubectl top pods pod-name      [Check the cpu and memory usage of all the pods]
+minikube addons enable metrics-server
+  
+kubectl create deployment myd  --image=vimal13/apache-webserver-php
+kubectl expose deployment myd --type=NodePort  --port=8080
+kubectl exec -it myweb-764c9658b5-xzwwp  -- bash
+kubectl scale deployment myd --replicas=5
+
+kubectl autoscale deployment myd  --max=5   --min=2  --cpu-percent=60
+kubectl get hpa
+
+kubectl drain <node-name> --ignore-daemonsets --delete-local-data
+kubectl delete node <node-name>	
+
+###################### Docker Commands #################################################
+
+docker run -it --name web1  vimal13/apache-webserver-php
+docker exec os1  ifconfig
+docker run -dit --name os1  -p 8080:80  vimal13/apache-webserver-php 
+docker run -it --name myweb  -p 8080:80  -v /mydata:/var/www/html  httpd
+
+docker network ls
+
+docker network create  --driver bridge  --subnet 192.16.0.0/16  lwnet
+docker network rm  lwnet
+
+docker volume ls
+docker volume create myvol
+docker volume rm myvol
+
+docker commit myos    myimage:v1
+docker build  -t myimage:v1  .
+
+docker cp  hello.txt   myos:/
+docker cp myos:/file.txt  /
+
+docker exec -it myweb  bash
+docker stats -a
+docker logs os1
+
+docker-compose up -d
+docker-compose ps 
+
+docker run -dit --name os2  --cpus="0.250" --memory="512m"  centos:7
+docker rm -f $(docker ps -a -q)
+
+Docker-Swarm ---------------------------
+docker swarm init –advertise-addr (Master Ip)
+docker service create  --name webserver  nginx
+docker service ls
+
+##########################  Podman Session    #############################################
+systemctl start docker  --- Star "docker engine/docker daemon/docker service"
+##dockerless
+yum install runc  
+
+runc --  (1) [RT(runtime) specification] config
+         (2) [Rootfs (file system)]
+		 (1)+(2) Bundle 
+runc launch containers
+
+### install umoci
+umoci  convert oci image into bundle 
+
+wget https://github.com/opencontainers/umoci/releases/download/v0.4.7/umoci.amd64
+mv umoci.amd64  umoci
+chmod +x umoci
+mv umoci   /usr/bin/
+
+## install skopeo
+skopeo convert docker image into oci image
+yum install skopeo --nobest -y
+skopeo copy  docker://docker.io/library/httpd   oci:httpd:v1   ## convert docker hub image httpd into oci image httpd:v1
+ 
+umoci  unpack  --image  httpd:v1    /myws/second/bundle        ## Convert oci image httpd:v1 in bundle for runc
+
+runc create c1  ### create container 
+runc list       ### check all created containers
+runc kill c1    ### stop container
+runc start c1   ### start container
+
+## Docker does not support rootless and daemonless
+## Podman support rootless and daemonless
