@@ -1,0 +1,56 @@
+################# Nginx Web Server Setup AWS EC2 ###############################################
+1. yum install nginx -y	
+2. sudo systemctl start nginx
+3. cd /etc/nginx/nginx.conf   (nginx web server configuration file)
+4. cd /usr/share/nginx/html   (go to html directory and configure index.html file)
+5. Go to chrome browser and access web page by server public IP
+## nginx logs send to cloudwatch ##
+1. Need to create a role for ec2-cloudwatch access.
+2. install cloudwatch agent on nginx server  (sudo yum install amazon-cloudwatch-agent -y)
+3. create a file (amazon-cloudwatch-agent.json) and enter json script .
+{
+  "logs": {
+    "logs_collected": {	
+      "files": {
+        "collect_list": [
+          {
+            "file_path": "/var/log/nginx/access.log",
+            "log_group_name": "nginx-access-logs",
+            "log_stream_name": "{instance_id}-access",
+            "timestamp_format": "%d/%b/%Y:%H:%M:%S %z"
+          },
+          {
+            "file_path": "/var/log/nginx/error.log",
+            "log_group_name": "nginx-error-logs",
+            "log_stream_name": "{instance_id}-error",
+            "timestamp_format": "%Y/%m/%d %H:%M:%S"
+          }
+        ]
+      }
+    }
+  }
+}
+
+4. systemctl restart agent
+5. Run script 
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+    -a fetch-config \
+    -m ec2 \
+    -c file:/path/to/your/amazon-cloudwatch-agent.json \
+    -s
+
+#####################################################################################
+sudo yum install cronie -y
+sudo systemctl enable crond.service
+sudo systemctl start  crond.service
+vim file.sh
+#!/bin/bash
+touch hi.txt
+
+
+Cron Jobs
+
+crontab -l (to show all the current jobs)
+crontab -e (to edit or add new jobs)
+*(min) *(hr) *(day) *(month) *(week)
+crontab -r (delete cronjob)
