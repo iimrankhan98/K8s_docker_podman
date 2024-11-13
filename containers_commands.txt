@@ -51,6 +51,9 @@ docker-compose ps
 docker run -dit --name os2  --cpus="0.250" --memory="512m"  centos:7
 docker rm -f $(docker ps -a -q)
 
+docker rmi -f $(docker images -q)
+docker builder prune -f -a  --filter "until=24h"
+
 Docker-Swarm ---------------------------
 docker swarm init –advertise-addr (Master Ip)
 docker service create  --name webserver  nginx
