@@ -1,0 +1,65 @@
+trigger:
+  branches:
+    include:
+      - master
+
+resources:
+  repositories:
+    # Azure Repos for source code and Dockerfile
+    - repository: azureRepo
+      type: git
+      name: VisionWayB2BAndB2C/ai-course-finder  # Azure Repo path
+    # GitHub Repo for deployment YAML
+    - repository: githubRepo
+      type: github
+      name: iimrankhan98/visionway  # GitHub Repo path
+      endpoint: my-github  # Azure DevOps GitHub service connection name
+
+pool:
+  name: jobs-build-server  # Use your self-hosted agent pool
+
+stages:
+  - stage: BuildAndPush
+    displayName: 'Build and Push Docker Image'
+    jobs:
+      - job: BuildDocker
+        displayName: 'Build Docker Image and Push to AWS ECR'
+        pool:
+          name: jobs-build-server  # Self-hosted agent pool
+        steps:
+          # Step 1: Checkout code from Azure Repos
+          - checkout: azureRepo
+
+          # Step 2: Build Docker image
+          - script: |
+              echo "Building Docker Image"
+              aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 650378210006.dkr.ecr.ap-south-1.amazonaws.com
+              docker build -t 650378210006.dkr.ecr.ap-south-1.amazonaws.com/ai-course-finder-prod:$(Build.BuildId) .
+              docker push 650378210006.dkr.ecr.ap-south-1.amazonaws.com/ai-course-finder-prod:$(Build.BuildId)
+            displayName: 'Build and Push Docker Image'
+
+  - stage: UpdateDeployment
+    displayName: 'Update Deployment YAML'
+    dependsOn: BuildAndPush
+    jobs:
+      - job: UpdateYAML
+        displayName: 'Update GitHub Deployment YAML with New Image'
+        pool:
+          name: jobs-build-server  # Self-hosted agent pool
+        steps:
+          # Step 1: Checkout GitHub repository
+          - checkout: githubRepo
+            persistCredentials: true
+
+          # Step 2: Update deployment YAML with the new Docker image tag
+          - script: |
+              echo "Updating Deployment YAML with new Docker Image Tag"
+              IMAGE_TAG=650378210006.dkr.ecr.ap-south-1.amazonaws.com/ai-course-finder-prod:$(Build.BuildId)
+              cd nginx
+              sed -i "s|image: .*|image: ${IMAGE_TAG}|g" deployment.yaml
+              git config user.name "iimrankhan98"
+              git checkout master  # Explicitly switch to the master branch
+              git add deployment.yaml
+              git commit -m "Update deployment images to ${IMAGE_TAG}"
+              git push origin master
+            displayName: 'Update Deployment YAML in GitHub'
