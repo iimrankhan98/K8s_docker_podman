@@ -12,13 +12,14 @@ resources:
     # GitHub Repo for deployment YAML
     - repository: githubRepo
       type: github
-      name: iimrankhan98/visionway  # GitHub Repo path
+      name: centocode/visionway  # GitHub Repo path
       endpoint: my-github  # Azure DevOps GitHub service connection name
 
 pool:
   name: jobs-build-server  # Use your self-hosted agent pool
 
 stages:
+  # Stage 1: 'Build and Push Docker Image'
   - stage: BuildAndPush
     displayName: 'Build and Push Docker Image'
     jobs:
@@ -38,6 +39,7 @@ stages:
               docker push 650378210006.dkr.ecr.ap-south-1.amazonaws.com/ai-course-finder-prod:$(Build.BuildId)
             displayName: 'Build and Push Docker Image'
 
+  # Stage 2: 'Update Deployment YAML'
   - stage: UpdateDeployment
     displayName: 'Update Deployment YAML'
     dependsOn: BuildAndPush
@@ -55,11 +57,13 @@ stages:
           - script: |
               echo "Updating Deployment YAML with new Docker Image Tag"
               IMAGE_TAG=650378210006.dkr.ecr.ap-south-1.amazonaws.com/ai-course-finder-prod:$(Build.BuildId)
-              cd nginx
+              cd ai-course
               sed -i "s|image: .*|image: ${IMAGE_TAG}|g" deployment.yaml
-              git config user.name "iimrankhan98"
-              git checkout master  # Explicitly switch to the master branch
+              git config user.email "imran@centocode.com"
+              git config user.name "centocode"
+              git fetch origin
+              git checkout main  # Explicitly switch to the master branch
               git add deployment.yaml
               git commit -m "Update deployment images to ${IMAGE_TAG}"
-              git push origin master
+              git push origin main
             displayName: 'Update Deployment YAML in GitHub'
