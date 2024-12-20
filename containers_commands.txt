@@ -59,6 +59,11 @@ docker swarm init –advertise-addr (Master Ip)
 docker service create  --name webserver  nginx
 docker service ls
 
+sudo apt install ncdu (Use 'ncdu' for Disk Usage Analysis.)
+ncdu /
+sudo ctr -n=k8s.io images prune --all  (cleanup unused images in eks)
+echo 3 > /proc/sys/vm/drop_caches
+
 ##########################  Podman Session    #############################################
 systemctl start docker  --- Star "docker engine/docker daemon/docker service"
 ##dockerless
