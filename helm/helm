@@ -1,1 +1,2 @@
 helm list
+helm delete myhelm
