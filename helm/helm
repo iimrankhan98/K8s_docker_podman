@@ -3,3 +3,5 @@ helm install mychart1  my-helm-project/
 helm upgrade mychart1  my-helm-project/
 helm upgrade mychart1  my-helm-project/  --set x=v26
 helm delete myhelm
+helm rollback mychart1 1
+helm create mydomochart
