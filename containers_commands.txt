@@ -12,8 +12,8 @@ kubectl scale deployment myd --replicas=5
 kubectl autoscale deployment myd  --max=5   --min=2  --cpu-percent=60
 kubectl get hpa
 
-kubectl drain <node-name> --ignore-daemonsets --delete-local-data
-kubectl delete node <node-name>	
+kubectl drain ip-192-168-86-22.ap-south-1.compute.internal --ignore-daemonsets --delete-emptydir-data
+kubectl delete node ip-192-168-86-22.ap-south-1.compute.internal
 
 kubectl label node ip-192-168-29-132.ap-south-1.compute.internal kubernetes.io/role=worker-1
 kubectl label node ip-192-168-61-68.ap-south-1.compute.internal kubernetes.io/role=worker-2
