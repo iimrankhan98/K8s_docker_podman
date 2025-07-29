@@ -40,9 +40,9 @@ sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
     -s
 
 #####################################################################################
-sudo yum install cronie -y
-sudo systemctl enable crond.service
-sudo systemctl start  crond.service
+sudo apt install cron
+sudo systemctl enable cron
+sudo systemctl start  cron
 vim file.sh
 #!/bin/bash
 touch hi.txt
