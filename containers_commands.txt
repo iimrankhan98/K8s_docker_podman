@@ -25,7 +25,7 @@ docker run -it --name web1  vimal13/apache-webserver-php
 docker exec os1  ifconfig
 docker run -dit --name os1  -p 8080:80  vimal13/apache-webserver-php 
 docker run -it --name myweb  -p 8080:80  -v /mydata:/var/www/html  httpd
-docker run -dit --name os2  --cpus="0.250" --memory="512m"  --restart=always  centos:7
+docker run -dit --name os2  --cpus="0.250" --memory="512m"  --restart always  centos:7
 
 docker run -it --name myos --rm ubuntu:14.04 date
 
