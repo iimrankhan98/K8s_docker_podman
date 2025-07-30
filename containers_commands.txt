@@ -30,6 +30,7 @@ docker run -dit --name os2  --cpus="0.250" --memory="512m"  --restart=always  ce
 docker network ls
 docker run -dit --name os --network host nginx
 docker network create  --driver bridge  --subnet 192.16.0.0/16  lwnet
+docker run -dit --name myos --network lwnet  centos:7
 docker network rm  lwnet
 
 docker volume ls
