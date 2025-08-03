@@ -3,6 +3,7 @@ Kubectl describe pods  mypod
 kubectl logs 	 mypod
 kubectl top pods pod-name      [Check the cpu and memory usage of all the pods]
 minikube addons enable metrics-server
+kubectl delete pods --all
   
 kubectl create deployment myd  --image=vimal13/apache-webserver-php
 kubectl expose deployment myd --type=NodePort  --port=8080
