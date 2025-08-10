@@ -30,6 +30,10 @@ docker run -dit --name os2  --cpus="0.250" --memory="512m"  --restart always  ce
 
 docker run -it --name myos --rm ubuntu:14.04 date
 
+docker container prune
+docker image prune
+docker image prune -a
+
 docker network ls
 docker run -dit --name os --network host nginx
 docker network create  --driver bridge  --subnet 192.16.0.0/16  lwnet
